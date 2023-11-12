@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load leaflet_tags %}
+
+{% block title %}Crime Detect{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row p-2 justify-content-center align-items-center">
+            <h1>Crime Detect</h1>
+        </div>
+        <div class="">
+            {% leaflet_map "yourmap" %}
+        </div>
+        <div class="row p-2 justify-content-center align-items-center">
+            <p>Created By: Joshua AL Rasbi</p>
+        </div>
+    </div>
+
+    <div class="modal fade" id="locationModal" tabindex="-1" role="dialog" aria-labelledby="locationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="locationModalLabel">Add Location</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="locationComment">Comment:</label>
+                    <textarea id="locationComment" class="form-control"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="addLocationBtn">Add Location</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener("map:init", function (e) {
+            let map = e.detail.map;
+
+            // Try to get the user's geolocation
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    let userLocation = [position.coords.latitude, position.coords.longitude];
+
+                    // Set the view to the user's location
+                    map.setView(userLocation, 15);
+
+                    // Display a blue circle representing the accuracy
+                    L.circle(userLocation, {
+                        color: 'blue',
+                        fillColor: 'blue',
+                        fillOpacity: 0.5,
+                        radius: position.coords.accuracy,  // Use accuracy for the circle's radius
+                    }).addTo(map);
+
+                    // Placing pins
+                    {% for location in locations %}
+                        L.marker([{{ location.coordinates.y }}, {{ location.coordinates.x }}])
+                            .addTo(map)
+                            .bindPopup("{{ location.comment }}<br>{{ location.log_date|date:'F j, Y H:i:s' }}");
+                    {% endfor %}
+
+                    // Add pin
+                    map.on('click', function (e) {
+                        $('#locationModal').modal('show');
+
+                        document.getElementById('addLocationBtn').addEventListener('click', function () {
+                            let userComment = document.getElementById('locationComment').value.trim();
+
+                            if (userComment !== "") {
+                                L.marker(e.latlng)
+                                    .addTo(map)
+                                    .bindPopup(userComment);
+
+                                fetch("{% url 'add_pin' %}", {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRFToken': "{{ csrf_token }}",
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        latitude: e.latlng.lat,
+                                        longitude: e.latlng.lng,
+                                        comment: userComment,
+                                    }),
+                                })
+                                .then(response => response.json())
+                                .then(data => console.log(data))
+                                .catch(error => console.error(error));
+
+                                // Close the modal
+                                $('#locationModal').modal('hide');
+                            }
+                        });
+                    });
+                });
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+
+                // Just show pins if no user location
+                {% for location in locations %}
+                    L.marker([{{ location.coordinates.y }}, {{ location.coordinates.x }}])
+                        .addTo(map)
+                        .bindPopup("{{ location.comment }}");
+                {% endfor %}
+            }
+        });
+    </script>
+{% endblock %}
