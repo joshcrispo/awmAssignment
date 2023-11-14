@@ -11,7 +11,9 @@ from django.contrib.gis.geos import Point
 def home(request):
     # Fetch existing locations
     locations = Location.objects.all()
-    return render(request, 'home.html', {'locations': locations})
+
+    recent_locations = Location.objects.order_by('-log_date')[:5]
+    return render(request, 'home.html', {'locations': locations, 'recent_locations': recent_locations})
 
 
 @csrf_exempt

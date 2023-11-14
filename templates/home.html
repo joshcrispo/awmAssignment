@@ -11,6 +11,27 @@
         <div class="">
             {% leaflet_map "yourmap" %}
         </div>
+
+        <div class="row p-2">
+            <h2>Most Recent Crimes:</h2>
+            <div class="card-deck justify-content-center align-items-center">
+                {% for location in recent_locations %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ location.comment }}</h5>
+                                <p class="card-text">{{ location.log_date|date:'F j, Y H:i' }}</p>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#locationModal{{ location.id }}" data-latitude="{{ location.coordinates.y }}" data-longitude="{{ location.coordinates.x }}">
+                                    Show on Map
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+
         <div class="row p-2 justify-content-center align-items-center">
             <p>Created By: Joshua AL Rasbi</p>
         </div>
@@ -57,7 +78,7 @@
                         radius: position.coords.accuracy,  // Use accuracy for the circle's radius
                     }).addTo(map);
 
-                    // Placing pins
+                    // Placing pins for existing locations
                     {% for location in locations %}
                         L.marker([{{ location.coordinates.y }}, {{ location.coordinates.x }}])
                             .addTo(map)
@@ -108,6 +129,15 @@
                         .bindPopup("{{ location.comment }}");
                 {% endfor %}
             }
+
+            // Handle "Show on Map" button click
+            $('.btn-primary').on('click', function() {
+                let latitude = $(this).data('latitude');
+                let longitude = $(this).data('longitude');
+
+                // Center the map to the clicked location
+                map.setView([latitude, longitude], 15);
+            });
         });
     </script>
 {% endblock %}
