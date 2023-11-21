@@ -26,11 +26,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 with open('secret_key.txt') as f:
     SECRET_KEY = f.read().strip()
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -87,12 +82,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'gis',
-        'USER': 'postgis_user',
-        'PASSWORD': 'postgis_user',
-        # 'HOST': 'localhost',
-        'HOST': '172.19.0.2',
-        # 'PORT': 25432,
-        'PORT': 5432,
+        # 'USER': 'postgis_user',
+        # 'PASSWORD': 'postgis_user',
+        # 'USER': 'postgis_docker',
+        # 'PASSWORD': 'postgis_docker',
+        'HOST': 'localhost',
+        # 'HOST': '172.18.0.2',
+        'PORT': 25432,
+        # 'PORT': 5432,
     }
 }
 
@@ -156,9 +153,13 @@ STATIC_URL = "/static/"
 if socket.gethostname() =="Joshuas-MacBook-Pro.local":
     DATABASES["default"]["HOST"] = "localhost"
     DATABASES["default"]["PORT"] = docker_config.POSTGIS_PORT
+    DATABASES["default"]["USER"] = 'postgis_docker'
+    DATABASES["default"]["PASSWORD"] = 'postgis_docker'
 else:
     DATABASES["default"]["HOST"] = f"{docker_config.PROJECT_NAME}-postgis"
     DATABASES["default"]["PORT"] = 5432
+    DATABASES["default"]["USER"] = 'postgis_user'
+    DATABASES["default"]["PASSWORD"] = 'postgis_user'
 # Set DEPLOY_SECURE to True only for LIVE deployment
 if docker_config.DEPLOY_SECURE:
     DEBUG = False
