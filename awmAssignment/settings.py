@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'pwa',
     'crimeDetect',
+    'rest_framework',
     'leaflet',
 ]
 
@@ -86,9 +88,9 @@ DATABASES = {
         # 'PASSWORD': 'postgis_user',
         # 'USER': 'postgis_docker',
         # 'PASSWORD': 'postgis_docker',
-        'HOST': 'localhost',
+        # 'HOST': 'localhost',
         # 'HOST': '172.18.0.2',
-        'PORT': 25432,
+        # 'PORT': 25432,
         # 'PORT': 5432,
     }
 }
