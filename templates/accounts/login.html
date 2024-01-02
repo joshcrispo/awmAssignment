@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load rest_framework %}
+
+{% block title %}Crime Detect - Login{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-md-6 text-center mb-4">
+                <img src="{% static 'images/crimeDetect_icon.png' %}" alt="App Icon" class="img-fluid">
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="login-box p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <h2 class="text-center mb-4">Login</h2>
+                        <div class="form-group">
+                            <label for="id_username">Username:</label>
+                            {{ form.username | add_class:'form-control' }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_password">Password:</label>
+                            {{ form.password | add_class:'form-control' }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                    </form>
+                     <p class="text-center mt-3">
+                        Don't have an account? <a href="{% url 'register' %}">Register here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

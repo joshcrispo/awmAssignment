@@ -150,7 +150,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATIC_URL = "/static/"
+STATIC_URL = "/staticfiles/"
+
+PWA_APP_NAME = 'Crime Detect'
+PWA_APP_DESCRIPTION = "Website for detecting crimes"
+PWA_APP_THEME_COLOR = '#0A0302'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': '/staticfiles/images/crimeDetect_icon.png',
+        'sizes': '512x512'
+    }
+]
 
 if socket.gethostname() =="Joshuas-MacBook-Pro.local":
     DATABASES["default"]["HOST"] = "localhost"

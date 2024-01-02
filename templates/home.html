@@ -1,33 +1,59 @@
 {% extends "base.html" %}
+{% load static %}
 {% load leaflet_tags %}
 
 {% block title %}Crime Detect{% endblock %}
 
 {% block content %}
     <div class="container">
-        <div class="row p-2 justify-content-center align-items-center">
-            <h1>Crime Detect</h1>
+        <div class="row p-2 justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <img src="{% static 'images/crimeDetect_icon.png' %}" alt="App Icon" class="img-fluid" style="max-height: 10vh;">
+                <h1 class="ml-4 mt-3">Crime Detect</h1>
+            </div>
+            <div class="row ml-auto mr-5">
+                <p class="mt-3 mr-3">Hi, {{ user.username }}</p>
+                <button id="logoutButton" class="btn btn-primary">Logout</button>
+            </div>
         </div>
         <div class="">
             {% leaflet_map "yourmap" %}
         </div>
 
-        <div class="row p-2">
-            <h2>Most Recent Crimes:</h2>
-            <div class="card-deck justify-content-center align-items-center">
-                {% for location in recent_locations %}
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ location.comment }}</h5>
-                                <p class="card-text">{{ location.log_date|date:'F j, Y H:i' }}</p>
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#locationModal{{ location.id }}" data-latitude="{{ location.coordinates.y }}" data-longitude="{{ location.coordinates.x }}">
-                                    Show on Map
-                                </button>
-                            </div>
+        <div class="container">
+            <div class="row p-2">
+                <h2 class="ml-2 mb-3">Most Recent Crimes:</h2>
+            </div>
+            <div class="row p-2 justify-content-center">
+                <div id="crimeCarousel" class="carousel slide w-75" data-ride="carousel" data-interval="false">
+                    <div class="carousel-inner">
+                        <div class="row">
+                            {% for location in recent_locations %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <div class="col-md-4 mx-auto">
+                                        <div class="col-lg-12 col-md-12 col-sm-6  card" style="width: 18rem;">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ location.comment }}</h5>
+                                                <p class="card-text">{{ location.log_date|date:'F j, Y H:i' }}</p>
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#locationModal{{ location.id }}" data-latitude="{{ location.coordinates.y }}" data-longitude="{{ location.coordinates.x }}">
+                                                    Show on Map
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
-                {% endfor %}
+                    <a class="carousel-control-prev" href="#crimeCarousel" role="button" data-slide="prev" id="prevBtn">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#crimeCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -47,8 +73,43 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <label for="locationComment">Comment:</label>
-                    <textarea id="locationComment" class="form-control"></textarea>
+                    <label for="crimeType">Select Crime Type:</label>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="crimeType" id="robbery" value="Robbery">
+                        <label class="form-check-label" for="robbery">Robbery</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="crimeType" id="assault" value="Assault">
+                        <label class="form-check-label" for="assault">Assault</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="crimeType" id="burglary" value="Burglary">
+                        <label class="form-check-label" for="burglary">Burglary</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="crimeType" id="vandalism" value="Vandalism">
+                        <label class="form-check-label" for="vandalism">Vandalism</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="crimeType" id="drugPossession" value="Drug Possession">
+                        <label class="form-check-label" for="drugPossession">Drug Possession</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="crimeType" id="theft" value="Theft">
+                        <label class="form-check-label" for="theft">Theft</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="crimeType" id="kidnapping" value="Kidnapping">
+                        <label class="form-check-label" for="kidnapping">Kidnapping</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="crimeType" id="fraud" value="Fraud">
+                        <label class="form-check-label" for="fraud">Fraud</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" name="crimeType" id="homicide" value="Homicide">
+                        <label class="form-check-label" for="homicide">Homicide</label>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -89,28 +150,36 @@
                     map.on('click', function (e) {
                         $('#locationModal').modal('show');
 
-                        document.getElementById('addLocationBtn').addEventListener('click', function () {
-                            let userComment = document.getElementById('locationComment').value.trim();
+                         document.getElementById('addLocationBtn').addEventListener('click', function () {
+                            let selectedCrimeType = document.querySelector('input[name="crimeType"]:checked');
+                            let userComment = selectedCrimeType ? selectedCrimeType.value : "";
 
                             if (userComment !== "") {
                                 L.marker(e.latlng)
                                     .addTo(map)
                                     .bindPopup(userComment);
 
-                                fetch("{% url 'add_pin' %}", {
+                                let latitude = e.latlng.lat;
+                                let longitude = e.latlng.lng;
+
+                                fetch("{% url 'api_add_location' %}", {
                                     method: 'POST',
                                     headers: {
                                         'X-CSRFToken': "{{ csrf_token }}",
                                         'Content-Type': 'application/json',
                                     },
                                     body: JSON.stringify({
-                                        latitude: e.latlng.lat,
-                                        longitude: e.latlng.lng,
+                                        coordinates: {
+                                            type: 'Point',
+                                            coordinates: [longitude, latitude],
+                                        },
                                         comment: userComment,
                                     }),
                                 })
                                 .then(response => response.json())
-                                .then(data => console.log(data))
+                                .then(data => {
+                                    console.log(data);
+                                })
                                 .catch(error => console.error(error));
 
                                 // Close the modal
@@ -138,6 +207,24 @@
                 // Center the map to the clicked location
                 map.setView([latitude, longitude], 15);
             });
+        });
+
+        // Add an event listener for the logout button
+        document.getElementById('logoutButton').addEventListener('click', function () {
+            // Perform a fetch or any other logic to log the user out
+            fetch("{% url 'logout' %}", {
+                method: 'POST',  // You might need to adjust the method based on your project setup
+                headers: {
+                    'X-CSRFToken': "{{ csrf_token }}",
+                    'Content-Type': 'application/json',
+                },
+                // Add any data or options required for your logout process
+            })
+            .then(response => {
+                // Redirect to the login page after logout
+                window.location.href = "{% url 'login' %}";
+            })
+            .catch(error => console.error(error));
         });
     </script>
 {% endblock %}
