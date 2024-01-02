@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'pwa',
     'crimeDetect',
+    'rest_framework',
     'leaflet',
 ]
 
@@ -86,9 +88,9 @@ DATABASES = {
         # 'PASSWORD': 'postgis_user',
         # 'USER': 'postgis_docker',
         # 'PASSWORD': 'postgis_docker',
-        'HOST': 'localhost',
+        # 'HOST': 'localhost',
         # 'HOST': '172.18.0.2',
-        'PORT': 25432,
+        # 'PORT': 25432,
         # 'PORT': 5432,
     }
 }
@@ -148,7 +150,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATIC_URL = "/static/"
+STATIC_URL = "/staticfiles/"
+
+PWA_APP_NAME = 'Crime Detect'
+PWA_APP_DESCRIPTION = "Website for detecting crimes"
+PWA_APP_THEME_COLOR = '#0A0302'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': '/staticfiles/images/crimeDetect_icon.png',
+        'sizes': '512x512'
+    }
+]
 
 if socket.gethostname() =="Joshuas-MacBook-Pro.local":
     DATABASES["default"]["HOST"] = "localhost"

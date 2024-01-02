@@ -1,11 +1,13 @@
 {% load leaflet_tags %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     {% leaflet_css %}
     {% leaflet_js %}
-
+    {% load pwa %}
+    {% progressive_web_app_meta %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <style>
@@ -38,6 +40,18 @@
         {% endblock %}
     </main>
 
+    <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('{% static "sw.js" %}')
+            .then(function (registration) {
+              console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch(function (error) {
+              console.error('Service Worker registration failed:', error);
+            });
+
+        }
+      </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
